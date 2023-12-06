@@ -144,5 +144,4 @@ quick_cd() {
 # effect in the current process. Functions are defined locally to avoid 
 # polluting global namespace.
 alias qcd='quick_cd'
-qcd -h
 
