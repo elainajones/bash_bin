@@ -23,22 +23,17 @@ alias ghist='history | grep'
 #source ~/bin/qcd-SOURCEME.sh;
 
 passgen() {
-    declare opt=$1;
-    
-    if [[ "$opt" == "-h" ]] || [[ "$opt" == "--help" ]]; then
-        echo "Generates random password and pipes to less.";
-        echo "Usage: passgen <option>";
-        printf "\t-h,--help,help\tprint this help and exit\n";
-        printf "\t\t<int>\tpassword character length (default 12)\n";
-    elif [[ -e ~/bin/passgen.py ]]; then
-        python3 -u ~/bin/passgen.py ${opt} | less;
-    elif ! [[ -e ~/bin/passgen.py ]]; then
-        echo "~/bin/passgen.py: No such file";
-    else
-        echo "I didn't code for this lol";
-    fi
+    declare pw_len=${1:-20};
+    declare x_chars=$2;
 
-    unset opt
+    x_chars+="\n;,.\"\`\'"
+
+    # Lazy stack overflow magic
+    # https://stackoverflow.com/questions/27799024
+    pass=$(LC_CTYPE=C < /dev/urandom tr -cd [:graph:] |\
+        tr -d "$x_chars" | fold -w $pw_len | head -n 1);
+    
+    echo $pass | less;
 }
 
 doff() {
