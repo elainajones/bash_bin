@@ -15,25 +15,46 @@ alias ummtp='fusermount -u ~/mtp/'
 
 alias oprts='sudo netstat -ntupl'
 
-# Discord demands an update (gentoo users unite)
-alias discup='sudo emerge --sync && sudo emerge discord'
-
 alias ghist='history | grep'
 
+# Requires qcd file.
 #source ~/bin/qcd-SOURCEME.sh;
 
 passgen() {
     declare pw_len=${1:-20};
-    declare x_chars=$2;
-
-    x_chars+="\n;,.\"\`\'"
+    # Extra presets for dumb char restrictions.
+    declare -A profile=(\
+        ["1"]="{}[]<>~_\\-\\\\/|:=+?" \
+    );
+    
+    rm_chars="\n;,.\"\`\'";
+    if [[ "$2" ]]; then
+        rm_chars+="${profile[$2]}";
+    fi
 
     # Lazy stack overflow magic
     # https://stackoverflow.com/questions/27799024
     pass=$(LC_CTYPE=C < /dev/urandom tr -cd [:graph:] |\
-        tr -d "$x_chars" | fold -w $pw_len | head -n 1);
+        tr -d "$rm_chars" | fold -w $pw_len | head -n 1);
     
     echo $pass | less;
+}
+
+ovpn() {
+    declare opt=$1;
+    declare root_dir="/etc/openvpn/ovpn-locations";
+    configs=($(ls $root_dir/*));
+
+    if ! [[ "$opt" ]]; then
+        for i in $(seq 0 $((${#configs[@]}-1))); do
+            name=$(basename ${configs[$i]});
+            printf "[$i]\t$name\n";
+        done
+    elif [[ "$(seq 0 $((${#configs[@]}-1)) | grep -wo $opt)" ]]; then
+        sudo openvpn ${configs[$opt]};
+    else
+        echo "Invalid option"
+    fi
 }
 
 doff() {
@@ -51,7 +72,7 @@ doff() {
     unset opt;
 }
 
-chroot-mnt() {
+chrootm() {
     declare opt=${1:-"-h"};
 
     if [[ "$opt" = "-h" ]]; then
