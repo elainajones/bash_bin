@@ -1,5 +1,6 @@
 #! /bin/bash
 
+
 get_sync_date() {
     target="/var/db/repos/gentoo";
     mod_date=$(ls -ldqgG --time-style="+%Y%m%d%H%M%S" $target | \
@@ -22,7 +23,7 @@ main() {
     sync_time=$((today - sync_date));
 
     if [ $sync_time -gt $sync_limit ]; then
-        sudo emerge --sync &>$log_path;
+        sudo emerge --sync &>>$log_path &
     fi
 }
 main;
