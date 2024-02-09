@@ -20,14 +20,34 @@ print_help() {
         "" \
         "Options:" \
         "  -h, --help\tShow this message and exit." \
-        "  -i, --input\tInput." \
-        "  -o, --output\tOutput." \
+        "  -i, --input [INPUT]\tInput value." \
+        "  -o, --output [OUTPUT]\tOutput value." \
+        "  -d, --daemonize\tRun as a background process." \
     );
 
     for i in ${!lines[@]}; do
         line=${lines[$i]};
         printf "$line\n";
     done
+}
+
+require_val() {
+    declare key="$1";
+    declare val="$2";
+    if ! [[ "$val" ]]; then
+        echo "Option '$key' requires an argument";
+        echo "Try '--help' for more information.";
+        exit 1;
+    fi
+}
+
+do_thing() {
+    declare input="$1";
+    declare output="$2";
+    # Added delay to more clearly demonstrate the '-d' option.
+    sleep 5;
+    printf "Input:\t'$input'\n";
+    printf "Output:\t'$output'\n";
 }
 
 main() {
@@ -38,23 +58,29 @@ main() {
         print_help;
         exit 0;
     fi
-
+    
+    # Declare vars and define default values.
     declare input="";
     declare output="";
+    declare daemonize=0;
 
     for key in "${!CONFIG[@]}"; do
         val="${CONFIG[$key]}";
         case $key in
             "-i")
+                require_val "$key" "$val";
                 input=$val;
                 ;;
             "--input")
+                require_val "$key" "$val";
                 input=$val;
                 ;;
             "-o")
+                require_val "$key" "$val";
                 output=$val;
                 ;;
             "--output")
+                require_val "$key" "$val";
                 output=$val;
                 ;;
             "-h")
@@ -65,6 +91,12 @@ main() {
                 print_help;
                 exit 0;
                 ;;
+            "-d")
+                daemonize=1;
+                ;;
+            "--daemonize")
+                daemonize=1;
+                ;;
             *)
                 echo "Invalid option '$key'";
                 echo "Try '--help' for more information.";
@@ -72,8 +104,14 @@ main() {
         esac
     done
 
-    echo "Input: '$input'";
-    echo "Output: '$output'";
+    if (( $daemonize )); then
+        do_thing "$input" "$output" &
+        pid=$!;
+        echo "Running with pid $pid";
+
+    else
+        do_thing "$input" "$output"
+    fi
 }
 
 main $@;
