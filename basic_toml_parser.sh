@@ -56,7 +56,7 @@ parse_toml() {
 	        # 4. Remove quotes from strings conditionally.
             declare val=$(\
                 echo $table | \
-                grep -oP "(?<=${key}).+(?=${keys[$i]})" | \
+                grep -oP "(?<=${key}).+?(?=${keys[$i]}(\s=|\Z))" | \
                 grep -oP "(?<=\=).+" | \
                 grep -oP "\S(.*|\s)\S+" | \
                 grep -oP "(?<=\"|\'|\b).+(?=\"|\'|\b)" \
