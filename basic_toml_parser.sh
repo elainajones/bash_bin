@@ -52,16 +52,14 @@ parse_toml() {
             # 1. Use variable keys to match everything up to the next 
             #    variable key as the variable value.
             # 2. Match everything to the right of the `=` sign.
-            # 3. Remove leading whitespace.
-            # 4. Remove trailing whitespace.
-	        # 5. Remove quotes from strings conditionally.
+            # 3. Remove leading/trailing whitespace.
+	        # 4. Remove quotes from strings conditionally.
             declare val=$(\
                 echo $table | \
                 grep -oP "(?<=${key}).+?(?=${keys[$i]}(\s=|\Z))" | \
                 grep -oP "(?<=\=).+" | \
                 grep -oP "\S(.*|\s)\S+" | \
-                grep -oP "\S.*" | \
-                grep -oP ".*\S" | \
+                grep -oP "\S.*" | grep -oP ".*\S" | \
                 grep -oP "(?<=\"|\'|\b).+(?=\"|\'|\b)" \
             );
 

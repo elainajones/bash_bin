@@ -6,12 +6,10 @@ parse_args() {
     for key in $(echo ${args[*]} | grep -oP "\B\-\S+"); do
         # 1. Use variable keys to match everything up to the next 
         #    variable key as the variable value.
-        # 3. Remove leading whitespace.
-        # 4. Remove trailing whitespace.
+        # 2. Remove leading/trailing whitespace.
         val=$(echo ${args[*]} | \
             grep -oP "(?<=$key).+?(?=\B\-|\Z)" | \
-            grep -oP "\S.*" | \
-            grep -oP ".*\S");
+            grep -oP "\S.*" | grep -oP ".*\S");
         CONFIG["$key"]="$val";
     done
 }
