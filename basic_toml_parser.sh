@@ -58,7 +58,6 @@ parse_toml() {
                 echo $table | \
                 grep -oP "(?<=${key}).+?(?=${keys[$i]}(\s=|\Z))" | \
                 grep -oP "(?<=\=).+" | \
-                grep -oP "\S(.*|\s)\S+" | \
                 grep -oP "\S.*" | grep -oP ".*\S" | \
                 grep -oP "(?<=\"|\'|\b).+(?=\"|\'|\b)" \
             );
