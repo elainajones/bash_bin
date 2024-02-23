@@ -1,15 +1,19 @@
 #! /bin/bash
 
 parse_args() {
-    args=$@;
+    args="$@";
     declare -Ag CONFIG=();
-    for key in $(echo ${args[*]} | grep -oP "\B\-\S+"); do
+    declare keys=($(echo $args | grep -oP "\B\-\S+"));
+    for i in $(seq 1 ${#keys[@]}); do
+        declare key="${keys[$((i-1))]}";
         # 1. Use variable keys to match everything up to the next 
         #    variable key as the variable value.
         # 2. Remove leading/trailing whitespace.
-        val=$(echo ${args[*]} | \
-            grep -oP "(?<=$key).+?(?=\B\-|\Z)" | \
-            grep -oP "\S.*" | grep -oP ".*\S");
+        declare val="$(\
+            echo $args | \
+            grep -oP "(?<=$key\s).+?(?=${keys[$i]}(\s|\Z))" | \
+            grep -oP "\S.*" | grep -oP ".*\S" \
+        )";
         CONFIG["$key"]="$val";
     done
 }
