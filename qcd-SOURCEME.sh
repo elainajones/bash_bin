@@ -171,19 +171,17 @@ qcd() {
     if ! [[ "${!ARGS[@]}" ]]; then
         if [[ $arg_count -eq 0 ]]; then
             print_shortcuts;
-        elif [[ $arg_count -eq 1 ]]; then
-            if [[ "${CONFIG["$1"]}" ]]; then
-                dir_name="${CONFIG["$1"]}";
+        else
+            if [[ "${CONFIG["$@"]}" ]]; then
+                dir_name="${CONFIG["$@"]}";
                 if [[ -d "$dir_name" ]]; then
                     cd "$dir_name";
                 else
                     echo "Directory moved or missing";
                 fi
             else
-                echo "No such shortcut";
+                echo "No such shortcut '$@'";
             fi
-        elif [[ $arg_count -gt 1 ]]; then
-            echo "Too many arguments";
         fi
     fi
 }
